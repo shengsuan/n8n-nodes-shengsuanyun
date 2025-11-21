@@ -24,6 +24,8 @@ export class LmChatShengSuanYun implements INodeType {
 			headers: {
 				Accept: 'application/json',
 				'Content-Type': 'application/json',
+				'HTTP-Referer':'https://github.com/shengsuan/n8n-nodes-shengsuanyun',
+				'X-Title': 'n8n-nodes-shengsuanyun',
 			},
 			ignoreHttpStatusErrors: true,
 		},
@@ -192,6 +194,12 @@ export class LmChatShengSuanYun implements INodeType {
 		};
 		const configuration: ClientOptions = {
 			baseURL: credentials.url,
+			defaultHeaders:{
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+				'HTTP-Referer':'https://github.com/shengsuan/n8n-nodes-shengsuanyun',
+				'X-Title': 'n8n-nodes-shengsuanyun',
+			}
 		};
 
 		const model = new ChatOpenAI({

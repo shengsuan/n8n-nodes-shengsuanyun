@@ -1,9 +1,9 @@
 {
   "name": "n8n-nodes-shengsuanyun",
   "version": "0.1.0",
-  "description": "n8n community node for ShengSuanYun API integration",
+  "description": "n8n community node for ShengSuanYun LLMs API Router integration.",
   "license": "MIT",
-  "homepage": "https://github.com/shengsuanyun/n8n-nodes-shengsuanyun",
+  "homepage": "https://www.shengsuanyun.com",
   "keywords": [
     "n8n-community-node-package"
   ],
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shengsuanyun/n8n-nodes-shengsuanyun.git"
+    "url": "git+https://github.com/shengsuan/n8n-nodes-shengsuanyun.git"
   },
   "scripts": {
     "build": "n8n-node build",
