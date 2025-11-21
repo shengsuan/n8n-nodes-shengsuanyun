@@ -5,10 +5,11 @@ import type {
 	INodeProperties,
 } from 'n8n-workflow';
 
-export class apiKey implements ICredentialType {
-	name = 'apiKey';
-	displayName = 'ShengSuanYun API Key';
-	documentationUrl = 'https://github.com/org/-shengsuanyun?tab=readme-ov-file#credentials';
+export class shengSyanYunApi implements ICredentialType {
+	name = 'shengSyanYunApi';
+	displayName = 'ShengSuanYun API';
+	documentationUrl = 'https://docs.router.shengsuanyun.com/7013961m0';
+
 	properties: INodeProperties[] = [
 		{
 			displayName: 'API Key',
@@ -18,13 +19,21 @@ export class apiKey implements ICredentialType {
 			required: true,
 			default: '',
 		},
+		{
+			displayName: 'Base URL',
+			name: 'url',
+			type: 'string',
+			typeOptions: { password: false },
+			required: false,
+			default: 'https://router.shengsuanyun.com/api/v1',
+		},
 	];
 
 	authenticate: IAuthenticateGeneric = {
 		type: 'generic',
 		properties: {
 			headers: {
-				'Authorization': 'Bearer ={{$credentials.apiKey}}',
+				'x-api-key': '={{$credentials.apiKey}}',
 			},
 		},
 	};
@@ -32,7 +41,7 @@ export class apiKey implements ICredentialType {
 	test: ICredentialTestRequest = {
 		request: {
 			baseURL: 'https://router.shengsuanyun.com/api/v1',
-			url: '/v1/user',
+			url: '/models',
 		},
 	};
 }
