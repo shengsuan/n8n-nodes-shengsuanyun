@@ -1,13 +1,12 @@
 import { ISupplyDataFunctions, NodeConnectionTypes,SupplyData, 
 	type INodeType, type INodeTypeDescription } from 'n8n-workflow';
-import { ChatOpenAI, type ClientOptions } from '@langchain/openai';
-
+import { ShengSuanYunChatModel } from './ShengSuanYunChatModel';
 type OpenAICompatibleCredential = { apiKey: string; url: string };
 
 export class LmChatShengSuanYun implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Sheng Suan Yun',
-		name: 'LmChatShengSuanYun',
+		displayName: 'ShengSuanYun Chat Model',
+		name: 'lmChatShengSuanYun',
 		icon: { light: 'file:shengsuanyun.svg', dark: 'file:shengsuanyun.dark.svg' },
 		group: ['transform'],
 		version: 1,
@@ -89,7 +88,7 @@ export class LmChatShengSuanYun implements INodeType {
 						property: 'model',
 					},
 				},
-				default: 'ali/qwen-turbo-latest',
+				default: '',
 			},
 			{
 				displayName: 'Options',
@@ -108,6 +107,13 @@ export class LmChatShengSuanYun implements INodeType {
 						type: 'number',
 					},
 					{
+						displayName: 'Max Retries',
+						name: 'maxRetries',
+						default: 2,
+						description: 'Maximum number of retries to attempt',
+						type: 'number',
+					},
+					{
 						displayName: 'Maximum Number of Tokens',
 						name: 'maxTokens',
 						default: -1,
@@ -116,6 +122,14 @@ export class LmChatShengSuanYun implements INodeType {
 						typeOptions: {
 							maxValue: 32768,
 						},
+					},
+					{
+						displayName: 'Presence Penalty',
+						name: 'presencePenalty',
+						default: 0,
+						typeOptions: { maxValue: 2, minValue: -2, numberPrecision: 1 },
+						description:"Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics",
+						type: 'number',
 					},
 					{
 						displayName: 'Response Format',
@@ -136,14 +150,6 @@ export class LmChatShengSuanYun implements INodeType {
 						],
 					},
 					{
-						displayName: 'Presence Penalty',
-						name: 'presencePenalty',
-						default: 0,
-						typeOptions: { maxValue: 2, minValue: -2, numberPrecision: 1 },
-						description:"Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics",
-						type: 'number',
-					},
-					{
 						displayName: 'Sampling Temperature',
 						name: 'temperature',
 						default: 0.7,
@@ -159,13 +165,6 @@ export class LmChatShengSuanYun implements INodeType {
 						type: 'number',
 					},
 					{
-						displayName: 'Max Retries',
-						name: 'maxRetries',
-						default: 2,
-						description: 'Maximum number of retries to attempt',
-						type: 'number',
-					},
-					{
 						displayName: 'Top P',
 						name: 'topP',
 						default: 1,
@@ -176,6 +175,7 @@ export class LmChatShengSuanYun implements INodeType {
 				],
 			},
 		],
+		usableAsTool: true,
 	};
 
 	async supplyData(this: ISupplyDataFunctions, itemIndex: number): Promise<SupplyData> {
@@ -184,38 +184,23 @@ export class LmChatShengSuanYun implements INodeType {
 		const options = this.getNodeParameter('options', itemIndex, {}) as {
 			frequencyPenalty?: number;
 			maxTokens?: number;
-			maxRetries: number;
-			timeout: number;
+			maxRetries?: number;
+			timeout?: number;
 			presencePenalty?: number;
 			temperature?: number;
 			topP?: number;
 			responseFormat?: 'text' | 'json_object';
-			streaming?: boolean,
 		};
-		const configuration: ClientOptions = {
-			baseURL: credentials.url,
-			defaultHeaders:{
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
-				'HTTP-Referer':'https://github.com/shengsuan/n8n-nodes-shengsuanyun',
-				'X-Title': 'n8n-nodes-shengsuanyun',
-			}
-		};
-
-		const model = new ChatOpenAI({
+		const model = new ShengSuanYunChatModel({
 			apiKey: credentials.apiKey,
+			baseURL: credentials.url,
 			model: modelName,
-			...options,
-			timeout: options.timeout ?? 60000,
-			// maxRetries: options.maxRetries ?? 2,
-			configuration,
-			// callbacks: [new N8nLlmTracing(this)],
-			modelKwargs: options.responseFormat
-				? {response_format: { type: options.responseFormat }}
-				: undefined,
-			// onFailedAttempt: makeN8nLlmFailedAttemptHandler(this, openAiFailedAttemptHandler),
+			options: options, 
+			httpRequest: this.helpers.httpRequest,
 		});
-		return {response: model};
-	}
 
+		return {
+			response: model,
+		};
+	}
 }

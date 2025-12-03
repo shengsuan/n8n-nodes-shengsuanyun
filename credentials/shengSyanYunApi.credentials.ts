@@ -9,6 +9,7 @@ export class shengSyanYunApi implements ICredentialType {
 	name = 'shengSyanYunApi';
 	displayName = 'ShengSuanYun API';
 	documentationUrl = 'https://docs.router.shengsuanyun.com/7013961m0';
+	icon = { light: 'file:shengsuanyun.svg', dark: 'file:shengsuanyun.dark.svg' } as const;
 
 	properties: INodeProperties[] = [
 		{
