@@ -235,10 +235,8 @@ export class ShengSuanYunChatModel {
         (newModel as any).boundTools = tools; 
         return newModel;
     }
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     withConfig(config: unknown): this {
-        // eslint-disable-next-line no-console
-        console.log(config)
         return this;
     }
 
